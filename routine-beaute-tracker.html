@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Suivi Beauté</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --rose: #C9897A;
+    --rose-pale: #F2E8E5;
+    --rose-doux: #E8D0C8;
+    --beige: #F7F3F0;
+    --brun: #7A5C52;
+    --brun-clair: #A67E74;
+    --vert: #7A9E8A;
+    --vert-pale: #E5EFE8;
+    --or: #C4A882;
+    --texte: #3D2B26;
+    --texte-doux: #7A6560;
+    --blanc: #FEFCFB;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--beige);
+    color: var(--texte);
+    min-height: 100vh;
+    padding: 0 0 60px 0;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--brun) 0%, var(--rose) 100%);
+    padding: 32px 20px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; left: -20px;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    color: white;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+  .header p {
+    color: rgba(255,255,255,0.75);
+    font-size: 0.8rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* NAV SEMAINES */
+  .nav-container {
+    background: var(--blanc);
+    border-bottom: 1px solid var(--rose-doux);
+    padding: 0 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(122,92,82,0.08);
+  }
+  .nav-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 4px;
+    padding: 10px 0;
+    scrollbar-width: none;
+  }
+  .nav-scroll::-webkit-scrollbar { display: none; }
+  .nav-btn {
+    flex-shrink: 0;
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--rose-doux);
+    background: transparent;
+    color: var(--texte-doux);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .nav-btn:hover { border-color: var(--rose); color: var(--rose); }
+  .nav-btn.active {
+    background: var(--rose);
+    border-color: var(--rose);
+    color: white;
+  }
+  .nav-btn.completed {
+    background: var(--vert);
+    border-color: var(--vert);
+    color: white;
+  }
+
+  /* MAIN */
+  .main { padding: 16px; max-width: 480px; margin: 0 auto; }
+
+  /* PHASE BADGE */
+  .phase-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--rose-pale);
+    border: 1px solid var(--rose-doux);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--brun);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  /* WEEK CARD */
+  .week-card {
+    background: var(--blanc);
+    border-radius: 16px;
+    padding: 18px 16px;
+    margin-bottom: 14px;
+    border: 1px solid var(--rose-doux);
+  }
+  .week-card h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--brun);
+    margin-bottom: 4px;
+  }
+  .week-objective {
+    font-size: 0.78rem;
+    color: var(--texte-doux);
+    font-style: italic;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+
+  /* ALERT BOX */
+  .alert-box {
+    background: #FEF9E7;
+    border: 1px solid #F0D060;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 0.76rem;
+    color: #7A6010;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .alert-box strong { display: block; margin-bottom: 2px; }
+
+  /* SECTION LABEL */
+  .section-label {
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brun-clair);
+    margin: 14px 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rose-doux);
+  }
+
+  /* DAY ROW */
+  .day-row {
+    background: var(--beige);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+  }
+  .day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .day-name {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--texte);
+  }
+  .day-tag {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+  }
+  .tag-retinal { background: var(--rose-pale); color: var(--brun); }
+  .tag-acide { background: var(--vert-pale); color: #4A7A5A; }
+  .tag-repos { background: #F0F0F0; color: #888; }
+
+  /* CHECKLIST */
+  .checklist { display: flex; flex-direction: column; gap: 4px; }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 2px 0;
+  }
+  .check-item input[type="checkbox"] { display: none; }
+  .check-box {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    border: 1.5px solid var(--rose-doux);
+    background: white;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 11px;
+    color: white;
+  }
+  .check-item.checked .check-box {
+    background: var(--rose);
+    border-color: var(--rose);
+  }
+  .check-item.checked .check-box::after { content: '✓'; }
+  .check-label {
+    font-size: 0.76rem;
+    color: var(--texte);
+    line-height: 1.4;
+    transition: all 0.2s;
+  }
+  .check-item.checked .check-label {
+    color: var(--texte-doux);
+    text-decoration: line-through;
+  }
+  .check-pause {
+    font-size: 0.65rem;
+    color: var(--brun-clair);
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  /* PROGRESS BAR */
+  .progress-container { margin-top: 10px; }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: var(--texte-doux);
+    margin-bottom: 4px;
+  }
+  .progress-bar {
+    height: 5px;
+    background: var(--rose-doux);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--rose), var(--brun-clair));
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+
+  /* WEEKLY SUMMARY */
+  .weekly-summary {
+    background: linear-gradient(135deg, var(--rose-pale), var(--blanc));
+    border: 1px solid var(--rose-doux);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+  .weekly-summary h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--brun);
+    margin-bottom: 10px;
+  }
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+  .summary-day {
+    text-align: center;
+  }
+  .summary-day-name {
+    font-size: 0.6rem;
+    color: var(--texte-doux);
+    margin-bottom: 3px;
+    text-transform: uppercase;
+  }
+  .summary-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--rose-doux);
+    background: white;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    color: var(--texte-doux);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .summary-dot.done { background: var(--rose); border-color: var(--rose); color: white; }
+  .summary-dot.partial { background: var(--rose-doux); border-color: var(--rose); color: var(--brun); }
+
+  /* SIGNALS */
+  .signals-card {
+    background: var(--blanc);
+    border: 1px solid var(--rose-doux);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+  .signals-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    color: var(--brun);
+    margin-bottom: 10px;
+  }
+  .signal-item {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin-bottom: 7px;
+    font-size: 0.76rem;
+    line-height: 1.5;
+  }
+  .signal-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+  .dot-green { background: var(--vert); }
+  .dot-orange { background: #E8A060; }
+  .dot-red { background: #C96060; }
+
+  /* NOTES */
+  .notes-card {
+    background: var(--blanc);
+    border: 1px solid var(--rose-doux);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+  .notes-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    color: var(--brun);
+    margin-bottom: 8px;
+  }
+  .notes-area {
+    width: 100%;
+    min-height: 80px;
+    border: 1px solid var(--rose-doux);
+    border-radius: 8px;
+    padding: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    color: var(--texte);
+    background: var(--beige);
+    resize: vertical;
+    outline: none;
+    line-height: 1.6;
+  }
+  .notes-area:focus { border-color: var(--rose); }
+  .save-btn {
+    margin-top: 8px;
+    padding: 7px 16px;
+    background: var(--rose);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .save-btn:hover { background: var(--brun); }
+  .saved-msg {
+    font-size: 0.7rem;
+    color: var(--vert);
+    margin-left: 8px;
+    display: none;
+  }
+
+  /* INTRO PROGRESS */
+  .intro-phase {
+    background: var(--blanc);
+    border: 1px solid var(--rose-doux);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+  .intro-phase h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    color: var(--brun);
+    margin-bottom: 10px;
+  }
+  .phase-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+  .phase-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--rose-pale);
+    border: 1.5px solid var(--rose-doux);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: var(--brun);
+    flex-shrink: 0;
+  }
+  .phase-num.active-phase {
+    background: var(--rose);
+    border-color: var(--rose);
+    color: white;
+  }
+  .phase-num.done-phase {
+    background: var(--vert);
+    border-color: var(--vert);
+    color: white;
+  }
+  .phase-text { font-size: 0.76rem; line-height: 1.5; }
+  .phase-text strong { color: var(--brun); }
+
+  /* HIDDEN */
+  .week-view { display: none; }
+  .week-view.active { display: block; }
+
+  /* BOTTOM RESET */
+  .reset-btn {
+    display: block;
+    margin: 20px auto 0;
+    padding: 8px 20px;
+    background: transparent;
+    border: 1px solid var(--rose-doux);
+    border-radius: 20px;
+    color: var(--texte-doux);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .reset-btn:hover { border-color: var(--rose); color: var(--rose); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Mon Suivi Beauté</h1>
+  <p>Réintroduction progressive · 11 semaines</p>
+</div>
+
+<div class="nav-container">
+  <div class="nav-scroll" id="navScroll"></div>
+</div>
+
+<div class="main" id="mainContent"></div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+
+const PHASES = [
+  {
+    weeks: [1, 2],
+    label: "Phase 1 — Stabilisation",
+    num: 1
+  },
+  {
+    weeks: [3, 4],
+    label: "Phase 2 — Premiers actifs",
+    num: 2
+  },
+  {
+    weeks: [5, 6],
+    label: "Phase 3 — Routine matin complète",
+    num: 3
+  },
+  {
+    weeks: [7, 8],
+    label: "Phase 4 — Introduction rétinal",
+    num: 4
+  },
+  {
+    weeks: [9, 10],
+    label: "Phase 5 — Montée en puissance",
+    num: 5
+  },
+  {
+    weeks: [11],
+    label: "Phase 6 — Routine complète",
+    num: 6
+  }
+];
+
+const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+const DAY_SHORT = ['L', 'Ma', 'Me', 'J', 'V', 'S', 'D'];
+
+// Types de soirée selon la semaine
+function getEveningType(week, dayIndex) {
+  // dayIndex: 0=Lundi, 1=Mardi, ... 6=Dimanche
+  if (week >= 11) {
+    // Routine complète
+    if (dayIndex === 0 || dayIndex === 4) return 'acide'; // Lundi, Vendredi
+    if (dayIndex === 6) return 'repos';
+    return 'retinal';
+  }
+  if (week >= 9) {
+    if (dayIndex === 0 || dayIndex === 4) return 'acide';
+    if (dayIndex === 6) return 'repos';
+    if (dayIndex === 1 || dayIndex === 3) return 'retinal'; // 2 soirs rétinal
+    return 'repos';
+  }
+  if (week >= 7) {
+    if (dayIndex === 1) return 'retinal'; // 1 soir rétinal seulement
+    if (dayIndex === 6) return 'repos';
+    return 'repos';
+  }
+  return 'repos';
+}
+
+function getMorningSteps(week) {
+  const base = [
+    { label: "Eau florale fleur d'oranger Ladrôme — sur coton", pause: "30 sec" },
+  ];
+  if (week >= 3) base.push({ label: "Vitamine C — peau sèche", pause: "3-5 min" });
+  if (week >= 5) base.push({ label: "Alpha Arbutin — ciblé sur taches uniquement", pause: "1 min" });
+  if (week >= 5) base.push({ label: "Contour des yeux Caudalie", pause: "1 min" });
+  base.push({ label: "Avène Ultra Sérum SPF50+ — descendre sur cou + décolleté", pause: "" });
+  if (week >= 3) base.push({ label: "Avène Tolerance Fluide — bas joues uniquement", pause: "" });
+  base.push({ label: "Alvadiem ongles — matin", pause: "" });
+  return base;
+}
+
+function getEveningSteps(week, type) {
+  const base = [
+    { label: "Huile démaquillante", pause: "" },
+    { label: "Nettoyant doux", pause: "" },
+    { label: "Eau florale fleur d'oranger Ladrôme — sur coton", pause: "30 sec" },
+  ];
+
+  if (type === 'repos') {
+    if (week >= 3) base.push({ label: "Sérum acide hyaluronique — peau légèrement humide, cou inclus", pause: "1 min" });
+    if (week >= 5) base.push({ label: "Contour des yeux Caudalie", pause: "1 min" });
+    base.push({ label: "Avène Tolerance Fluide — tout le visage", pause: "" });
+    if (week >= 3) base.push({ label: "Endro Crème Collagène — bas joues + ovale", pause: "" });
+    base.push({ label: "Lait raffermissant corps — mouvements ascendants + massage 5 min", pause: "" });
+    base.push({ label: "Alvadiem ongles — soir", pause: "" });
+    return base;
+  }
+
+  if (type === 'acide') {
+    if (week >= 9) {
+      base.push({ label: "Acide salicylique — zone T, peau sèche", pause: "5-10 min" });
+      base.push({ label: "Eau florale — vaporiser avant HA", pause: "Immédiat" });
+    }
+    if (week >= 3) base.push({ label: "Sérum acide hyaluronique — peau légèrement humide, cou inclus", pause: "1 min" });
+    if (week >= 5) base.push({ label: "Contour des yeux Caudalie", pause: "1 min" });
+    base.push({ label: "Avène Tolerance Fluide — tout le visage", pause: "1 min" });
+    if (week >= 3) base.push({ label: "Endro Crème Collagène — bas joues + ovale", pause: "" });
+    base.push({ label: "Gua sha — 5 min, mouvements ascendants", pause: "" });
+    base.push({ label: "Lait raffermissant corps — mouvements ascendants + massage 5 min", pause: "" });
+    base.push({ label: "Alvadiem ongles — soir", pause: "" });
+    return base;
+  }
+
+  if (type === 'retinal') {
+    if (week >= 3) base.push({ label: "Sérum acide hyaluronique — peau légèrement humide, cou inclus", pause: "1 min" });
+    if (week >= 5) base.push({ label: "Contour des yeux Caudalie", pause: "1 min" });
+    if (week >= 7) base.push({ label: "Rétinal — peau sèche, visage ET cou", pause: "5 min" });
+    base.push({ label: "Avène Tolerance Fluide — tout le visage", pause: "1 min" });
+    if (week >= 3) base.push({ label: "Endro Crème Collagène — bas joues + ovale", pause: "" });
+    base.push({ label: "Gua sha — 5 min, mouvements ascendants", pause: "" });
+    base.push({ label: "Lait raffermissant corps — mouvements ascendants + massage 5 min", pause: "" });
+    base.push({ label: "Alvadiem ongles — soir", pause: "" });
+    return base;
+  }
+
+  return base;
+}
+
+function getWeekObjective(week) {
+  if (week <= 2) return "Laisser la barrière cutanée se stabiliser. Uniquement les soins de base — observer les réactions.";
+  if (week <= 4) return "Introduire la Vitamine C et l'HA. Tester la tolérance 1 produit à la fois.";
+  if (week <= 6) return "Routine matin complète avec Alpha Arbutin et contour des yeux. Surveiller les taches.";
+  if (week <= 8) return "Introduction du rétinal 1 soir par semaine uniquement. Observer attentivement la tolérance.";
+  if (week <= 10) return "Rétinal 2 soirs/semaine + acide salicylique 1 soir/semaine. Jamais le même soir.";
+  return "Routine complète ! Rétinal 4 soirs, acide salicylique 2 soirs, repos le dimanche.";
+}
+
+function getWeekAlerts(week) {
+  if (week <= 2) return "⚠️ Si picotements ou rougeurs persistants → noter le produit concerné et attendre 2 jours de plus avant de passer à la phase 2.";
+  if (week <= 4) return "⚠️ Introduire la Vitamine C 1 jour sur 2 les 3 premiers jours. Si bien tolérée → tous les matins.";
+  if (week <= 6) return "⚠️ Ne jamais appliquer Alpha Arbutin sans SPF après. Résultats taches : 4 à 8 semaines.";
+  if (week <= 8) return "⚠️ Rétinal sur peau SÈCHE uniquement. Attendre 5 min minimum après HA. Si irritation → passer au rétinol (joker).";
+  if (week <= 10) return "⚠️ Jamais acide salicylique et rétinal le même soir. En cas d'irritation : semaine de repos supplémentaire.";
+  return "✅ Routine complète atteinte ! Continuer à écouter votre peau et adapter si besoin.";
+}
+
+// Rituels du samedi uniquement
+function getSaturdayRituals() {
+  return [
+    { label: "Gommage corps — sous la douche", pause: "" },
+    { label: "Masque tissu HA + Aloe Vera — 20 min allongée, surplus sur cou + décolleté", pause: "" },
+  ];
+}
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+
+let currentWeek = 1;
+let state = {};
+
+function getKey(week, day, moment, idx) {
+  return `w${week}_d${day}_${moment}_${idx}`;
+}
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('beaute_tracker');
+    if (saved) state = JSON.parse(saved);
+  } catch(e) { state = {}; }
+}
+
+function saveState() {
+  try {
+    localStorage.setItem('beaute_tracker', JSON.stringify(state));
+    // Also save notes
+  } catch(e) {}
+}
+
+function isChecked(key) { return !!state[key]; }
+function toggle(key) {
+  state[key] = !state[key];
+  saveState();
+}
+
+// ─── RENDER ─────────────────────────────────────────────────────────────────
+
+function getCurrentPhase(week) {
+  return PHASES.find(p => p.weeks.includes(week)) || PHASES[PHASES.length - 1];
+}
+
+function getDayProgress(week, dayIndex) {
+  let total = 0, done = 0;
+  const mSteps = getMorningSteps(week);
+  mSteps.forEach((_, i) => {
+    total++;
+    if (isChecked(getKey(week, dayIndex, 'am', i))) done++;
+  });
+  const type = getEveningType(week, dayIndex);
+  const eSteps = getEveningSteps(week, type);
+  eSteps.forEach((_, i) => {
+    total++;
+    if (isChecked(getKey(week, dayIndex, 'pm', i))) done++;
+  });
+  // Saturday rituals
+  if (dayIndex === 5) { // Samedi = index 5
+    getSaturdayRituals().forEach((_, i) => {
+      total++;
+      if (isChecked(`satritual_w${week}_${i}`)) done++;
+    });
+  }
+  return { total, done };
+}
+
+function getWeekProgress(week) {
+  let total = 0, done = 0;
+  for (let d = 0; d < 7; d++) {
+    const p = getDayProgress(week, d);
+    total += p.total;
+    done += p.done;
+  }
+  return { total, done, pct: total ? Math.round(done / total * 100) : 0 };
+}
+
+function renderNav() {
+  const nav = document.getElementById('navScroll');
+  nav.innerHTML = '';
+  for (let w = 1; w <= 11; w++) {
+    const btn = document.createElement('button');
+    btn.className = 'nav-btn' + (w === currentWeek ? ' active' : '');
+    const prog = getWeekProgress(w);
+    if (prog.pct === 100 && w !== currentWeek) btn.classList.add('completed');
+    btn.textContent = `S${w}`;
+    btn.onclick = () => { currentWeek = w; render(); };
+    nav.appendChild(btn);
+  }
+}
+
+function renderChecklist(steps, week, dayIndex, moment) {
+  return steps.map((step, i) => {
+    const key = getKey(week, dayIndex, moment, i);
+    const checked = isChecked(key);
+    return `
+      <label class="check-item ${checked ? 'checked' : ''}" onclick="handleCheck('${key}', this)">
+        <div class="check-box"></div>
+        <span class="check-label">${step.label}</span>
+        ${step.pause ? `<span class="check-pause">${step.pause}</span>` : ''}
+      </label>`;
+  }).join('');
+}
+
+function renderDays(week) {
+  return DAYS.map((day, di) => {
+    const type = getEveningType(week, di);
+    const typeLabel = { retinal: 'Rétinal', acide: 'Acide salicylique', repos: 'Repos' }[type];
+    const typeClass = { retinal: 'tag-retinal', acide: 'tag-acide', repos: 'tag-repos' }[type];
+
+    const mSteps = getMorningSteps(week);
+    const eSteps = getEveningSteps(week, type);
+
+    const prog = getDayProgress(week, di);
+    const pct = prog.total ? Math.round(prog.done / prog.total * 100) : 0;
+
+    // Saturday rituals
+    let satSection = '';
+    if (di === 5) {
+      const satRituals = getSaturdayRituals();
+      const satChecklist = satRituals.map((r, i) => {
+        const key = `satritual_w${week}_${i}`;
+        const checked = isChecked(key);
+        return `<label class="check-item ${checked ? 'checked' : ''}" onclick="handleCheck('${key}', this)">
+          <div class="check-box"></div>
+          <span class="check-label">${r.label}</span>
+        </label>`;
+      }).join('');
+      satSection = `<div class="section-label">✨ Rituels du samedi</div><div class="checklist">${satChecklist}</div>`;
+    }
+
+    return `
+    <div class="day-row">
+      <div class="day-header">
+        <span class="day-name">${day}</span>
+        <span class="day-tag ${typeClass}">${typeLabel}</span>
+      </div>
+      <div class="section-label">🌅 Matin</div>
+      <div class="checklist">${renderChecklist(mSteps, week, di, 'am')}</div>
+      <div class="section-label">🌙 Soir</div>
+      <div class="checklist">${renderChecklist(eSteps, week, di, 'pm')}</div>
+
+      ${satSection}
+      <div class="progress-container">
+        <div class="progress-label"><span>Journée</span><span>${prog.done}/${prog.total}</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderWeeklySummary(week) {
+  const dots = DAYS.map((d, di) => {
+    const prog = getDayProgress(week, di);
+    const pct = prog.total ? prog.done / prog.total : 0;
+    let cls = '';
+    if (pct === 1) cls = 'done';
+    else if (pct > 0) cls = 'partial';
+    return `
+      <div class="summary-day">
+        <div class="summary-day-name">${DAY_SHORT[di]}</div>
+        <div class="summary-dot ${cls}">${pct === 1 ? '✓' : prog.done || ''}</div>
+      </div>`;
+  }).join('');
+
+  const wp = getWeekProgress(week);
+  return `
+    <div class="weekly-summary">
+      <h3>Vue de la semaine</h3>
+      <div class="summary-grid">${dots}</div>
+      <div class="progress-container" style="margin-top:12px">
+        <div class="progress-label"><span>Progression semaine</span><span>${wp.pct}%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${wp.pct}%"></div></div>
+      </div>
+    </div>`;
+}
+
+
+
+function renderSignals() {
+  return `
+    <div class="signals-card">
+      <h3>Signaux à surveiller</h3>
+      <div class="signal-item"><div class="signal-dot dot-green"></div><span><strong>Vert :</strong> Légère chaleur passagère à l'application — normal sur peau sensible.</span></div>
+      <div class="signal-item"><div class="signal-dot dot-orange"></div><span><strong>Orange :</strong> Picotements qui durent + 5 min, légère rougeur → noter le produit, attendre 2 jours avant de réessayer.</span></div>
+      <div class="signal-item"><div class="signal-dot dot-red"></div><span><strong>Rouge :</strong> Rougeurs persistantes, brûlures, desquamation → stopper le produit, revenir à la phase précédente 1 semaine.</span></div>
+    </div>`;
+}
+
+function renderNotes(week) {
+  const savedNote = localStorage.getItem(`note_w${week}`) || '';
+  return `
+    <div class="notes-card">
+      <h3>Notes semaine ${week}</h3>
+      <textarea class="notes-area" id="notesArea" placeholder="Comment réagit ma peau cette semaine ? Produits bien tolérés ? Sensations particulières...">${savedNote}</textarea>
+      <button class="save-btn" onclick="saveNote(${week})">Enregistrer</button>
+      <span class="saved-msg" id="savedMsg">✓ Enregistré</span>
+    </div>`;
+}
+
+function renderIntroPhases(week) {
+  const phaseItems = PHASES.map(p => {
+    const current = p.weeks.includes(week);
+    const done = Math.max(...p.weeks) < week;
+    const cls = done ? 'done-phase' : (current ? 'active-phase' : '');
+    const descriptions = {
+      1: "Semaines 1-2 · Eau florale + SPF matin. Nettoyage + crème soir uniquement.",
+      2: "Semaines 3-4 · + Vitamine C (1j/2 puis tous les jours) + HA + Endro bas joues.",
+      3: "Semaines 5-6 · + Alpha Arbutin ciblé + Contour des yeux Caudalie.",
+      4: "Semaines 7-8 · + Rétinal 1 soir/semaine. Observer la tolérance.",
+      5: "Semaines 9-10 · Rétinal 2 soirs + Acide salicylique 1 soir (jamais ensemble).",
+      6: "Semaine 11+ · Routine complète. Rétinal 4 soirs, salicylique 2 soirs, repos dimanche."
+    };
+    return `
+      <div class="phase-row">
+        <div class="phase-num ${cls}">${done ? '✓' : p.num}</div>
+        <div class="phase-text"><strong>${p.label}</strong><br>${descriptions[p.num]}</div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="intro-phase">
+      <h3>Parcours de réintroduction</h3>
+      ${phaseItems}
+    </div>`;
+}
+
+function render() {
+  const week = currentWeek;
+  const phase = getCurrentPhase(week);
+
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `
+    <div class="phase-badge">📍 ${phase.label}</div>
+
+    <div class="week-card">
+      <h2>Semaine ${week}</h2>
+      <p class="week-objective">${getWeekObjective(week)}</p>
+      <div class="alert-box"><strong>À surveiller cette semaine</strong>${getWeekAlerts(week)}</div>
+    </div>
+
+    ${renderWeeklySummary(week)}
+    ${renderIntroPhases(week)}
+
+    <div class="week-card">
+      <h2>Planning journalier</h2>
+      ${renderDays(week)}
+    </div>
+
+    ${renderSignals()}
+    ${renderNotes(week)}
+
+    <button class="reset-btn" onclick="resetWeek(${week})">Réinitialiser la semaine ${week}</button>
+  `;
+
+  renderNav();
+}
+
+function handleCheck(key, label) {
+  toggle(key);
+  label.classList.toggle('checked');
+  const box = label.querySelector('.check-box');
+  // Re-render progress bars and summary without full re-render
+  setTimeout(() => {
+    updateProgressBars();
+    updateSummaryDots();
+    renderNav();
+  }, 50);
+}
+
+function updateProgressBars() {
+  // Light update: just re-render progress areas
+  const dayRows = document.querySelectorAll('.day-row');
+  dayRows.forEach((row, di) => {
+    const prog = getDayProgress(currentWeek, di);
+    const pct = prog.total ? Math.round(prog.done / prog.total * 100) : 0;
+    const fill = row.querySelector('.progress-fill');
+    const label = row.querySelector('.progress-label span:last-child');
+    if (fill) fill.style.width = pct + '%';
+    if (label) label.textContent = `${prog.done}/${prog.total}`;
+  });
+  // Week progress
+  const wp = getWeekProgress(currentWeek);
+  const weekFills = document.querySelectorAll('.weekly-summary .progress-fill');
+  const weekLabels = document.querySelectorAll('.weekly-summary .progress-label span:last-child');
+  weekFills.forEach(f => f.style.width = wp.pct + '%');
+  weekLabels.forEach(l => l.textContent = wp.pct + '%');
+}
+
+function updateSummaryDots() {
+  const dots = document.querySelectorAll('.summary-dot');
+  dots.forEach((dot, di) => {
+    const prog = getDayProgress(currentWeek, di);
+    const pct = prog.total ? prog.done / prog.total : 0;
+    dot.className = 'summary-dot' + (pct === 1 ? ' done' : pct > 0 ? ' partial' : '');
+    dot.textContent = pct === 1 ? '✓' : (prog.done || '');
+  });
+}
+
+function saveNote(week) {
+  const area = document.getElementById('notesArea');
+  if (area) {
+    localStorage.setItem(`note_w${week}`, area.value);
+    const msg = document.getElementById('savedMsg');
+    if (msg) {
+      msg.style.display = 'inline';
+      setTimeout(() => msg.style.display = 'none', 2000);
+    }
+  }
+}
+
+function resetWeek(week) {
+  if (!confirm(`Réinitialiser toutes les cases de la semaine ${week} ?`)) return;
+  Object.keys(state).forEach(k => {
+    if (k.startsWith(`w${week}_`) || k.startsWith(`ritual_w${week}_`) || k.startsWith(`satritual_w${week}_`)) delete state[k];
+  });
+  saveState();
+  render();
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+loadState();
+render();
+</script>
+</body>
+</html>
